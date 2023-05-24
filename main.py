@@ -93,7 +93,7 @@ async def all_flight():
     return result
 
 
-@app.get('/seasonality')
+@app.post('/seasonality')
 async def seasonality(flt_num: int):
     """
     Возвращает данные сезонности по рейсу
@@ -105,7 +105,7 @@ async def seasonality(flt_num: int):
     result = await db.get_seasonality(flt_num)
     lst = []
     for res in result:
-        print(res)
+        # print(res)
         flyclass = {dct.get(el): res[el] for el in range(3, 25)}
         lst.append(Seasonality(
             date=res[2],

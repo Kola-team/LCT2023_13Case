@@ -52,7 +52,8 @@ class DB:
         query = select(
             self.flight_data
             ).where(
-            self.flight_data.c.flt_num==flt_num
+            self.flight_data.c.flt_num == flt_num
             )
         result = self.conn.execute(query).all()
+        print(len(result))
         return result
