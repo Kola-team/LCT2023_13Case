@@ -44,3 +44,15 @@ class DB:
         query = select(self.flights)
         result = self.conn.execute(query).all()
         return result
+
+    async def get_seasonality(self, flt_num: int):
+        """
+        Возвращает данные сезонности по рейсу
+        """
+        query = select(
+            self.flight_data
+            ).where(
+            self.flight_data.c.flt_num==flt_num
+            )
+        result = self.conn.execute(query).all()
+        return result
