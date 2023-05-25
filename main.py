@@ -1,9 +1,12 @@
+from datetime import date
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from data_base.db_query import DB
 from pydantic_models import FltNum, Flight, Fligts, Seasonality, \
-    ListSeasonality
+    ListSeasonality, Booking, ListBooking, FltDD
+from serializers import serializer
 
 app = FastAPI()
 db = DB()
@@ -59,3 +62,35 @@ async def seasonality(flt_num: FltNum):
             ))
     result = ListSeasonality(items=lst)
     return result
+
+
+@app.post('/booking')
+async def booking(flt_num: FltNum, dd: FltDD):
+    """
+    Возвращает данные по бронированию в зависимости
+    от направления, номера рейса и даты вылета
+    """
+    result = await db.get_flight_data(flt_num.flt_num)
+
+    if result is None:
+        return {'error': 'Данные не найдены'}
+
+    if result[0] == 'AER' and result[1] == 'SVO':
+        print('aer-svo')
+        result = await db.get_booking_aer_svo(flt_num.flt_num, dd.dd)
+        return serializer(result)
+
+    elif result[0] == 'ASF' and result[1] == 'SVO':
+        print('asf-svo')
+        result = await db.get_booking_asf_svo(flt_num.flt_num, dd.dd)
+        return serializer(result)
+
+    elif result[0] == 'SVO' and result[1] == 'AER':
+        print('svo-aer')
+        result = await db.get_booking_svo_aer(flt_num.flt_num, dd.dd)
+        return serializer(result)
+
+    elif result[0] == 'SVO' and result[1] == 'ASF':
+        print('svo-asf')
+        result = await db.get_booking_svo_asf(flt_num.flt_num, dd.dd)
+        return serializer(result)

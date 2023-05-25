@@ -8,6 +8,10 @@ class FltNum(BaseModel):
     flt_num: int
 
 
+class FltDD(BaseModel):
+    dd: date
+
+
 class Seasonality(BaseModel):
     date: date
     tt: int
@@ -17,6 +21,18 @@ class Seasonality(BaseModel):
 
 class ListSeasonality(BaseModel):
     items: List[Seasonality]
+
+
+class Booking(BaseModel):
+    sdat_s: date
+    dd: date
+    dtd: int
+    fly_class: Dict[str, int]
+    demcluster: int
+
+
+class ListBooking(BaseModel):
+    items: List[Booking]
 
 
 class Flight(BaseModel):
