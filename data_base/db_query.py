@@ -54,6 +54,11 @@ class DB:
             ).where(
             self.flight_data.c.flt_num == flt_num
             )
-        result = self.conn.execute(query).all()
-        print(len(result))
-        return result
+        try:
+            result = self.conn.execute(query).all()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None

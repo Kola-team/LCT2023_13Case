@@ -1,10 +1,9 @@
-from datetime import date
-from typing import List, Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
 
 from data_base.db_query import DB
+from pydantic_models import FltNum, Flight, Fligts, Seasonality, \
+    ListSeasonality
 
 app = FastAPI()
 db = DB()
@@ -20,74 +19,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-class Flight(BaseModel):
-    id: int
-    flt_num: int
-    departure: str
-    destination: str
-
-
-class Fligts(BaseModel):
-    items: List[Flight]
-
-
-class Seasonality(BaseModel):
-    date: date
-    tt: int
-    # b: int
-    # c: int
-    # d: int
-    # e: int
-    # g: int
-    # h: int
-    # i: int
-    # j: int
-    # k: int
-    # l: int
-    # m: int
-    # n: int
-    # o: int
-    # p: int
-    # q: int
-    # r: int
-    # t: int
-    # u: int
-    # v: int
-    # x: int
-    # y: int
-    # z: int
-    fly_class: Dict[str, int]
-    demcluster: int
-
-
-class FlyClass(BaseModel):
-    c: int
-    d: int
-    e: int
-    g: int
-    h: int
-    i: int
-    j: int
-    k: int
-    l: int
-    m: int
-    n: int
-    o: int
-    p: int
-    q: int
-    r: int
-    t: int
-    u: int
-    v: int
-    x: int
-    y: int
-    z: int
-
-
-class ListSeasonality(BaseModel):
-    items: List[Seasonality]
 
 
 @app.get('/all_flight')
@@ -107,7 +38,7 @@ async def all_flight():
 
 
 @app.post('/seasonality')
-async def seasonality(flt_num: int):
+async def seasonality(flt_num: FltNum):
     """
     Возвращает данные сезонности по рейсу
     """
@@ -115,7 +46,7 @@ async def seasonality(flt_num: int):
            9: 'i', 10: 'j', 11: 'k', 12: 'l', 13: 'm', 14: 'n',
            15: 'o', 16: 'p', 17: 'q', 18: 'r', 19: 't', 20: 'u',
            21: 'v', 22: 'x', 23: 'y', 24: 'z'}
-    result = await db.get_seasonality(flt_num)
+    result = await db.get_seasonality(flt_num.flt_num)
     lst = []
     for res in result:
         # print(res)
