@@ -196,7 +196,7 @@ class DB:
         """
         query = select(
             self.reserv_aer_svo.c.dtd,
-            self.reserv_aer_svo.c.dd,
+            self.reserv_aer_svo.c.tt,
             ).where(
             self.reserv_aer_svo.c.demcluster == demcluster,
             self.reserv_aer_svo.c.flt_num == flt_num,
