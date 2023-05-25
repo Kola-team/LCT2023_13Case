@@ -77,6 +77,28 @@ class DB:
             )
         try:
             result = self.conn.execute(query).first()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
+    async def get_season_from_flight_data(self, flt_num: int, dd: date):
+        """
+        Возвращает сезон по номеру рейса и дате вылета
+        """
+        query = select(
+            self.flight_data.c.demcluster,
+            self.flight_data.c.sorg,
+            self.flight_data.c.sdst
+        ).where(
+            self.flight_data.c.flt_num == flt_num,
+            self.flight_data.c.dd == dd,
+        )
+        try:
+            result = self.conn.execute(query).first()
+            print(len(result))
             return result
         except Exception as e:
             print(e)
@@ -157,6 +179,90 @@ class DB:
             self.reserv_svo_asf.c.flt_num == flt_num,
             self.reserv_svo_asf.c.tt > 0,
             self.reserv_svo_asf.c.dd == dd,
+            )
+        try:
+            result = self.conn.execute(query).all()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
+    async def get_booking_point_aer_svo(self, demcluster: int, flt_num: int):
+        """
+        Возвращает данные брониирования на основании сезона
+        направление aer_svo
+        """
+        query = select(
+            self.reserv_aer_svo.c.dtd,
+            self.reserv_aer_svo.c.dd,
+            ).where(
+            self.reserv_aer_svo.c.demcluster == demcluster,
+            self.reserv_aer_svo.c.flt_num == flt_num,
+            )
+        try:
+            result = self.conn.execute(query).all()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
+    async def get_booking_point_asf_svo(self, demcluster: int, flt_num: int):
+        """
+        Возвращает данные брониирования на основании сезона
+        направление asf_svo
+        """
+        query = select(
+            self.reserv_asf_svo.c.dtd,
+            self.reserv_asf_svo.c.tt,
+            ).where(
+            self.reserv_asf_svo.c.demcluster == demcluster,
+            self.reserv_asf_svo.c.flt_num == flt_num,
+            )
+        try:
+            result = self.conn.execute(query).all()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
+    async def get_booking_point_svo_aer(self, demcluster: int, flt_num: int):
+        """
+        Возвращает данные брониирования на основании сезона
+        направление svo_aer
+        """
+        query = select(
+            self.reserv_svo_aer.c.dtd,
+            self.reserv_svo_aer.c.tt,
+            ).where(
+            self.reserv_svo_aer.c.demcluster == demcluster,
+            self.reserv_svo_aer.c.flt_num == flt_num,
+            )
+        try:
+            result = self.conn.execute(query).all()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
+    async def get_booking_point_svo_asf(self, demcluster: int, flt_num: int):
+        """
+        Возвращает данные брониирования на основании сезона
+        направление svo_asf
+        """
+        query = select(
+            self.reserv_svo_asf.c.dtd,
+            self.reserv_svo_asf.c.tt,
+            ).where(
+            self.reserv_svo_asf.c.demcluster == demcluster,
+            self.reserv_svo_asf.c.flt_num == flt_num,
             )
         try:
             result = self.conn.execute(query).all()

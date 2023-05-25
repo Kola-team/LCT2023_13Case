@@ -1,7 +1,7 @@
-from pydantic_models import Booking, ListBooking
+from pydantic_models import Booking, ListBooking, BookingPoint, ListBookingPoint
 
 
-def serializer(result: tuple):
+def serializer_booking(result: tuple):
     dct = {5: 'b', 6: 'c', 7: 'd', 8: 'e', 9: 'g', 10: 'h',
            11: 'i', 12: 'j', 13: 'k', 14: 'l', 15: 'm', 16: 'n',
            17: 'o', 18: 'p', 19: 'q', 20: 'r', 21: 't', 22: 'u',
@@ -17,4 +17,15 @@ def serializer(result: tuple):
             demcluster=res[32]
             ))
     result = ListBooking(items=lst)
+    return result
+
+
+def serializer_booking_point(result: tuple):
+    lst = []
+    for res in result:
+        lst.append(BookingPoint(
+            dtd=res[0],
+            tt=res[1]
+        ))
+    result = ListBookingPoint(items=lst)
     return result

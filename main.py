@@ -5,8 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from data_base.db_query import DB
 from pydantic_models import FltNum, Flight, Fligts, Seasonality, \
-    ListSeasonality, Booking, ListBooking, FltDD
-from serializers import serializer
+    ListSeasonality, BookingPoint, ListBookingPoint, FltDD
+from serializers import serializer_booking, serializer_booking_point
 
 app = FastAPI()
 db = DB()
@@ -78,19 +78,60 @@ async def booking(flt_num: FltNum, dd: FltDD):
     if result[0] == 'AER' and result[1] == 'SVO':
         print('aer-svo')
         result = await db.get_booking_aer_svo(flt_num.flt_num, dd.dd)
-        return serializer(result)
+        return serializer_booking(result)
 
     elif result[0] == 'ASF' and result[1] == 'SVO':
         print('asf-svo')
         result = await db.get_booking_asf_svo(flt_num.flt_num, dd.dd)
-        return serializer(result)
+        return serializer_booking(result)
 
     elif result[0] == 'SVO' and result[1] == 'AER':
         print('svo-aer')
         result = await db.get_booking_svo_aer(flt_num.flt_num, dd.dd)
-        return serializer(result)
+        return serializer_booking(result)
 
     elif result[0] == 'SVO' and result[1] == 'ASF':
         print('svo-asf')
         result = await db.get_booking_svo_asf(flt_num.flt_num, dd.dd)
-        return serializer(result)
+        return serializer_booking(result)
+
+
+@app.post('/booking_point')
+async def booking_point(flt_num: FltNum, dd: FltDD):
+    """
+    Возвращает данные по бронированию в зависимости
+    от сезона
+    """
+    result = await db.get_season_from_flight_data(flt_num.flt_num, dd.dd)
+    print(result)
+
+    if result is None:
+        return {'error': 'Данные не найдены'}
+
+    if result[1] == 'AER' and result[2] == 'SVO':
+        print('aer-svo')
+        result = await db.get_booking_point_aer_svo(
+            demcluster=result[0],
+            flt_num=flt_num.flt_num)
+        return serializer_booking_point(result)
+
+    elif result[1] == 'ASF' and result[2] == 'SVO':
+        print('asf-svo')
+        result = await db.get_booking_point_asf_svo(
+            demcluster=result[0],
+            flt_num=flt_num.flt_num)
+        return serializer_booking_point(result)
+
+    elif result[1] == 'SVO' and result[2] == 'AER':
+        print('svo-aer')
+        result = await db.get_booking_point_svo_aer(
+            demcluster=result[0],
+            flt_num=flt_num.flt_num)
+        return serializer_booking_point(result)
+
+    elif result[1] == 'SVO' and result[2] == 'ASF':
+        print('svo-asf')
+        result = await db.get_booking_point_svo_asf(
+            demcluster=result[0],
+            flt_num=flt_num.flt_num)
+        return serializer_booking_point(result)

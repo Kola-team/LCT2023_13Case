@@ -68,3 +68,12 @@ class FlyClass(BaseModel):
     x: int
     y: int
     z: int
+
+
+class BookingPoint(BaseModel):
+    dtd: int
+    tt: int
+
+
+class ListBookingPoint(BaseModel):
+    items: List[BookingPoint]
