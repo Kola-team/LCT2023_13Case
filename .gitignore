@@ -3,3 +3,4 @@ __pycache__/
 /utility
 .env
 aeroflot.sql
+/utils

@@ -37,6 +37,22 @@ class DB:
                                     self.metadata,
                                     autoload_with=self.engine
                                     )
+        self.res_forecast_aer_svo = Table('res_forecast_aer_svo',
+                                          self.metadata,
+                                          autoload_with=self.engine
+                                          )
+        self.res_forecast_asf_svo = Table('res_forecast_asf_svo',
+                                          self.metadata,
+                                          autoload_with=self.engine
+                                          )
+        self.res_forecast_svo_aer = Table('res_forecast_svo_aer',
+                                          self.metadata,
+                                          autoload_with=self.engine
+                                          )
+        self.res_forecast_svo_asf = Table('res_forecast_svo_asf',
+                                          self.metadata,
+                                          autoload_with=self.engine
+                                          )
         self.conn = self.engine.connect()
 
     async def get_all_flights(self):
@@ -96,6 +112,26 @@ class DB:
             self.flight_data.c.flt_num == flt_num,
             self.flight_data.c.dd == dd,
         )
+        try:
+            result = self.conn.execute(query).first()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
+    async def get_flight_data_with_date(self, flt_num: int, dd: date):
+        """
+        Возвращает данные по рейсу и дате вылета
+        """
+        query = select(
+            self.flight_data.c.sorg,
+            self.flight_data.c.sdst,
+            ).where(
+            self.flight_data.c.flt_num == flt_num,
+            self.flight_data.c.dd == dd,
+            )
         try:
             result = self.conn.execute(query).first()
             print(len(result))
@@ -189,17 +225,39 @@ class DB:
             self.conn.rollback()
             return None
 
-    async def get_booking_point_aer_svo(self, demcluster: int, flt_num: int):
+    # async def get_booking_point_aer_svo(self, demcluster: int, flt_num: int):
+    #     """
+    #     Возвращает данные брониирования на основании сезона
+    #     направление aer_svo
+    #     """
+    #     query = select(
+    #         self.reserv_aer_svo.c.dtd,
+    #         self.reserv_aer_svo.c.tt,
+    #         ).where(
+    #         self.reserv_aer_svo.c.demcluster == demcluster,
+    #         self.reserv_aer_svo.c.flt_num == flt_num,
+    #         )
+    #     try:
+    #         result = self.conn.execute(query).all()
+    #         print(len(result))
+    #         return result
+    #     except Exception as e:
+    #         print(e)
+    #         self.conn.rollback()
+    #         return None
+
+    async def get_booking_point_aer_svo(self, flt_num: int, dd: date):
         """
-        Возвращает данные брониирования на основании сезона
+        Возвращает данные для графика резервирования с учетом сезона
         направление aer_svo
         """
         query = select(
-            self.reserv_aer_svo.c.dtd,
-            self.reserv_aer_svo.c.tt,
+            self.reserv_aer_svo
             ).where(
-            self.reserv_aer_svo.c.demcluster == demcluster,
+            self.reserv_aer_svo.c.dd == dd,
             self.reserv_aer_svo.c.flt_num == flt_num,
+            ).order_by(
+            self.reserv_aer_svo.c.dtd.desc()
             )
         try:
             result = self.conn.execute(query).all()
@@ -210,17 +268,39 @@ class DB:
             self.conn.rollback()
             return None
 
-    async def get_booking_point_asf_svo(self, demcluster: int, flt_num: int):
+    # async def get_booking_point_asf_svo(self, demcluster: int, flt_num: int):
+    #     """
+    #     Возвращает данные брониирования на основании сезона
+    #     направление asf_svo
+    #     """
+    #     query = select(
+    #         self.reserv_asf_svo.c.dtd,
+    #         self.reserv_asf_svo.c.tt,
+    #         ).where(
+    #         self.reserv_asf_svo.c.demcluster == demcluster,
+    #         self.reserv_asf_svo.c.flt_num == flt_num,
+    #         )
+    #     try:
+    #         result = self.conn.execute(query).all()
+    #         print(len(result))
+    #         return result
+    #     except Exception as e:
+    #         print(e)
+    #         self.conn.rollback()
+    #         return None
+
+    async def get_booking_point_asf_svo(self, flt_num: int, dd: date):
         """
-        Возвращает данные брониирования на основании сезона
+        Возвращает данные для графика резервирования с учетом сезона
         направление asf_svo
         """
         query = select(
-            self.reserv_asf_svo.c.dtd,
-            self.reserv_asf_svo.c.tt,
+            self.reserv_asf_svo
             ).where(
-            self.reserv_asf_svo.c.demcluster == demcluster,
+            self.reserv_asf_svo.c.dd == dd,
             self.reserv_asf_svo.c.flt_num == flt_num,
+            ).order_by(
+            self.reserv_asf_svo.c.dtd.desc()
             )
         try:
             result = self.conn.execute(query).all()
@@ -231,17 +311,39 @@ class DB:
             self.conn.rollback()
             return None
 
-    async def get_booking_point_svo_aer(self, demcluster: int, flt_num: int):
+    # async def get_booking_point_svo_aer(self, demcluster: int, flt_num: int):
+    #     """
+    #     Возвращает данные брониирования на основании сезона
+    #     направление svo_aer
+    #     """
+    #     query = select(
+    #         self.reserv_svo_aer.c.dtd,
+    #         self.reserv_svo_aer.c.tt,
+    #         ).where(
+    #         self.reserv_svo_aer.c.demcluster == demcluster,
+    #         self.reserv_svo_aer.c.flt_num == flt_num,
+    #         )
+    #     try:
+    #         result = self.conn.execute(query).all()
+    #         print(len(result))
+    #         return result
+    #     except Exception as e:
+    #         print(e)
+    #         self.conn.rollback()
+    #         return None
+
+    async def get_booking_point_svo_aer(self, flt_num: int, dd: date):
         """
-        Возвращает данные брониирования на основании сезона
+        Возвращает данные для графика резервирования с учетом сезона
         направление svo_aer
         """
         query = select(
-            self.reserv_svo_aer.c.dtd,
-            self.reserv_svo_aer.c.tt,
+            self.reserv_svo_aer
             ).where(
-            self.reserv_svo_aer.c.demcluster == demcluster,
+            self.reserv_svo_aer.c.dd == dd,
             self.reserv_svo_aer.c.flt_num == flt_num,
+            ).order_by(
+            self.reserv_svo_aer.c.dtd.desc()
             )
         try:
             result = self.conn.execute(query).all()
@@ -252,20 +354,63 @@ class DB:
             self.conn.rollback()
             return None
 
-    async def get_booking_point_svo_asf(self, demcluster: int, flt_num: int):
+    # async def get_booking_point_svo_asf(self, demcluster: int, flt_num: int):
+    #     """
+    #     Возвращает данные бронирования на основании сезона
+    #     направление svo_asf
+    #     """
+    #     query = select(
+    #         self.reserv_svo_asf.c.dtd,
+    #         self.reserv_svo_asf.c.tt,
+    #         ).where(
+    #         self.reserv_svo_asf.c.demcluster == demcluster,
+    #         self.reserv_svo_asf.c.flt_num == flt_num,
+    #         )
+    #     try:
+    #         result = self.conn.execute(query).all()
+    #         print(len(result))
+    #         return result
+    #     except Exception as e:
+    #         print(e)
+    #         self.conn.rollback()
+    #         return None
+
+    async def get_booking_point_svo_asf(self, flt_num: int, dd: date):
         """
-        Возвращает данные брониирования на основании сезона
+        Возвращает данные для графика резервирования с учетом сезона
         направление svo_asf
         """
         query = select(
-            self.reserv_svo_asf.c.dtd,
-            self.reserv_svo_asf.c.tt,
+            self.reserv_svo_asf
             ).where(
-            self.reserv_svo_asf.c.demcluster == demcluster,
+            self.reserv_svo_asf.c.dd == dd,
             self.reserv_svo_asf.c.flt_num == flt_num,
+            ).order_by(
+            self.reserv_svo_asf.c.dtd.desc()
             )
         try:
             result = self.conn.execute(query).all()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
+    async def get_demand_forecast_aer_svo(self, flt_num: int, dd: date):
+        """
+        Возвращает все планируемые полеты по номеру рейса
+        направление aer_svo
+        """
+        query = select(
+            self.flight_forecast.c.fd,
+            self.flight_forecast.c.tt,
+        ).where(
+            self.flight_forecast.c.flt_numsh == flt_num,
+            self.flight_forecast.c.fd == dd,
+        )
+        try:
+            result = self.conn.execute(query).first()
             print(len(result))
             return result
         except Exception as e:
