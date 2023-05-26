@@ -23,10 +23,6 @@
 
 # /booking_point_second данные для второго графика резервирования с учетом сезонов
 
-Сначала получаем hot_cold_cluster. Из таблицы reserv*** получаем только уникальные значения hcbuy, которые соответствуют номеру рейса (flt_num) и дате вылета (dd). Затем берем две колонки dtd и tt  из таблицы reserv***, которые соответствуют номеру рейса (flt_num) и дате вылета (dd). По колонке dtd получаем 0.25 и 0.75 персентиль.Далее возвращаем значения этих персентилей
-
-sdf = pd.read_sql(f"SELECT * FROM reserv WHERE flt_num='{fltnum}' AND dd='{date_str}' ", reserv_conn) #, parse_dates=['dd'])
-nonzero_segments = [s for s in segment_names if sdf[s].gt(0).any()] 
 
 # / данные для профиля спроса
 

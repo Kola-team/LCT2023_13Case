@@ -7,6 +7,10 @@ from data_base.db_query import DB
 
 db = DB()
 
+segment_names = ['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
+                 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y',
+                 'z']
+
 
 async def pd_booking_point_aer_svo(fltnum: int, date_str: str):
     """
@@ -165,4 +169,103 @@ async def pd_booking_point_svo_asf(fltnum: int, date_str: str):
     str_json = iqr.to_json()
 
     to_json = json.loads(str_json)
+    return to_json
+
+
+async def pd_booking_point_second_aer_svo(fltnum: int, date_str: str):
+    """
+    /booking_point_second данные для второго графика резервирования с учетом сезонов
+    направление aer-svo
+    """
+    sdf = pd.read_sql(
+        f"SELECT * "
+        f"FROM public.reserv_aer_svo "
+        f"WHERE flt_num='{fltnum}' AND dd='{date_str}' ",
+        db.engine)
+
+    nonzero_segments = []
+    for s in segment_names:
+        if s in sdf.columns:
+            if sdf[s].gt(0).any():
+                nonzero_segments.append(s)
+
+    cols = ['dtd'] + nonzero_segments
+
+    str_jons = sdf[cols].to_json()
+
+    to_json = json.loads(str_jons)
+    return to_json
+
+
+async def pd_booking_point_second_asf_svo(fltnum: int, date_str: str):
+    """
+    /booking_point_second данные для второго графика резервирования с учетом сезонов
+    направление asf-svo
+    """
+    sdf = pd.read_sql(
+        f"SELECT * "
+        f"FROM public.reserv_asf_svo "
+        f"WHERE flt_num='{fltnum}' AND dd='{date_str}' ",
+        db.engine)
+
+    nonzero_segments = []
+    for s in segment_names:
+        if s in sdf.columns:
+            if sdf[s].gt(0).any():
+                nonzero_segments.append(s)
+
+    cols = ['dtd'] + nonzero_segments
+
+    str_jons = sdf[cols].to_json()
+
+    to_json = json.loads(str_jons)
+    return to_json
+
+async def pd_booking_point_second_svo_aer(fltnum: int, date_str: str):
+    """
+    /booking_point_second данные для второго графика резервирования с учетом сезонов
+    направление svo_aer
+    """
+    sdf = pd.read_sql(
+        f"SELECT * "
+        f"FROM public.reserv_svo_aer "
+        f"WHERE flt_num='{fltnum}' AND dd='{date_str}' ",
+        db.engine)
+
+    nonzero_segments = []
+    for s in segment_names:
+        if s in sdf.columns:
+            if sdf[s].gt(0).any():
+                nonzero_segments.append(s)
+
+    cols = ['dtd'] + nonzero_segments
+
+    str_jons = sdf[cols].to_json()
+
+    to_json = json.loads(str_jons)
+    return to_json
+
+
+async def pd_booking_point_second_svo_asf(fltnum: int, date_str: str):
+    """
+    /booking_point_second данные для второго графика резервирования с учетом сезонов
+    направление svo_asf
+    """
+    sdf = pd.read_sql(
+        f"SELECT * "
+        f"FROM public.reserv_svo_asf "
+        f"WHERE flt_num='{fltnum}' AND dd='{date_str}' ",
+        db.engine)
+
+    nonzero_segments = []
+    for s in segment_names:
+        if s in sdf.columns:
+            if sdf[s].gt(0).any():
+                nonzero_segments.append(s)
+
+    cols = ['dtd'] + nonzero_segments
+
+    str_jons = sdf[cols].to_json()
+
+    to_json = json.loads(str_jons)
     return to_json
