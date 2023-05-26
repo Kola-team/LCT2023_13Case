@@ -1,5 +1,5 @@
 from datetime import date
-from typing import List, Dict, Tuple
+from typing import List, Dict
 
 from pydantic import BaseModel
 
@@ -78,6 +78,11 @@ class BookingPoint(BaseModel):
 
 class ListBookingPoint(BaseModel):
     items: List[BookingPoint]
+
+
+class BookingPointSecond(BaseModel):
+    p25: float
+    p75: float
 
 
 class DemandForecast(BaseModel):

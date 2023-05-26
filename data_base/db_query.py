@@ -7,7 +7,7 @@ from config import DATABASE_URL
 
 class DB:
     def __init__(self):
-        self.engine = create_engine(DATABASE_URL)
+        self.engine = create_engine(DATABASE_URL, echo=True)
         self.metadata = MetaData()
         self.flight_data = Table('flight_data',
                                  self.metadata,
@@ -55,12 +55,32 @@ class DB:
                                           )
         self.conn = self.engine.connect()
 
+    async def __exec_query(self, query):
+        try:
+            result = self.conn.execute(query).all()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
+    async def __exec_query_fetchone(self, query):
+        try:
+            result = self.conn.execute(query).fetchone()
+            print(len(result))
+            return result
+        except Exception as e:
+            print(e)
+            self.conn.rollback()
+            return None
+
     async def get_all_flights(self):
         """
         Получаем все рейсы
         """
         query = select(self.flights)
-        result = self.conn.execute(query).all()
+        result = await self.__exec_query(query)
         return result
 
     async def get_seasonality(self, flt_num: int):
@@ -397,6 +417,30 @@ class DB:
             self.conn.rollback()
             return None
 
+    async def get_booking_point_second_aer_svo(self, flt_num: int, dd: date):
+        """
+        Возвращает данные для второго графика резервирования с учетом сезонов
+        """
+        query = select(
+            self.reserv_aer_svo.c.hcbuy
+            ).where(
+            self.reserv_aer_svo.c.flt_num == flt_num,
+            self.reserv_aer_svo.c.dd == dd,
+            ).distinct(
+            self.reserv_aer_svo.c.hcbuy
+            )
+        hcbuy = await self.__exec_query(query)
+
+        query = select(
+            self.reserv_aer_svo.c.dtd,
+            self.reserv_aer_svo.c.tt,
+            ).where(
+            self.reserv_aer_svo.c.flt_num == flt_num,
+            self.reserv_aer_svo.c.hcbuy == hcbuy[0][0],
+            )
+        result = await self.__exec_query(query)
+        return result
+
     async def get_demand_forecast_aer_svo(self, flt_num: int, dd: date):
         """
         Возвращает все планируемые полеты по номеру рейса
@@ -417,3 +461,55 @@ class DB:
             print(e)
             self.conn.rollback()
             return None
+
+    async def pd_booking_point_aer_svo(self, flt_num: int, dd: date):
+        query = select(
+            self.reserv_aer_svo.c.demcluster,
+        ).where(
+            self.reserv_aer_svo.c.flt_num == flt_num,
+            self.reserv_aer_svo.c.dd == dd,
+        ).distinct(
+            self.reserv_aer_svo.c.demcluster
+        )
+        result = await self.__exec_query_fetchone(query)
+        print(result)
+        return result[0]
+
+    async def pd_booking_point_asf_svo(self, flt_num: int, dd: date):
+        query = select(
+            self.reserv_asf_svo.c.demcluster,
+        ).where(
+            self.reserv_asf_svo.c.flt_num == flt_num,
+            self.reserv_asf_svo.c.dd == dd,
+        ).distinct(
+            self.reserv_asf_svo.c.demcluster
+        )
+        result = await self.__exec_query_fetchone(query)
+        print(result)
+        return result[0]
+
+    async def pd_booking_point_svo_aer(self, flt_num: int, dd: date):
+        query = select(
+            self.reserv_svo_aer.c.demcluster,
+        ).where(
+            self.reserv_svo_aer.c.flt_num == flt_num,
+            self.reserv_svo_aer.c.dd == dd,
+        ).distinct(
+            self.reserv_svo_aer.c.demcluster
+        )
+        result = await self.__exec_query_fetchone(query)
+        print(result)
+        return result[0]
+
+    async def pd_booking_point_svo_asf(self, flt_num: int, dd: date):
+        query = select(
+            self.reserv_svo_asf.c.demcluster,
+        ).where(
+            self.reserv_svo_asf.c.flt_num == flt_num,
+            self.reserv_svo_asf.c.dd == dd,
+        ).distinct(
+            self.reserv_svo_asf.c.demcluster
+        )
+        result = await self.__exec_query_fetchone(query)
+        print(result)
+        return result[0]

@@ -1,13 +1,13 @@
-from datetime import date
-
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from data_base.db_query import DB
 from pydantic_models import FltNum, Flight, Fligts, Seasonality, \
-    ListSeasonality, FltDD, DemandForecast
-from serializers import serializer_booking, serializer_booking_point, \
+    ListSeasonality, FltDD
+from serializers import serializer_booking, \
     serializer_demand_forecast
+from utils.pd_func import pd_booking_point_aer_svo, pd_booking_point_asf_svo, \
+    pd_booking_point_svo_aer, pd_booking_point_svo_asf
 
 app = FastAPI()
 db = DB()
@@ -97,79 +97,73 @@ async def booking(flt_num: FltNum, dd: FltDD):
         return serializer_booking(result)
 
 
-# @app.post('/booking_point')
-# async def booking_point(flt_num: FltNum, dd: FltDD):
-#     """
-#     Возвращает данные по бронированию в зависимости
-#     от сезона
-#     """
-#     result = await db.get_season_from_flight_data(flt_num.flt_num, dd.dd)
-#     print(result)
-
-#     if result is None:
-#         return {'error': 'Данные не найдены'}
-
-#     if result[1] == 'AER' and result[2] == 'SVO':
-#         print('aer-svo')
-#         result = await db.get_booking_point_aer_svo(
-#             demcluster=result[0],
-#             flt_num=flt_num.flt_num)
-#         return serializer_booking_point(result)
-
-#     elif result[1] == 'ASF' and result[2] == 'SVO':
-#         print('asf-svo')
-#         result = await db.get_booking_point_asf_svo(
-#             demcluster=result[0],
-#             flt_num=flt_num.flt_num)
-#         return serializer_booking_point(result)
-
-#     elif result[1] == 'SVO' and result[2] == 'AER':
-#         print('svo-aer')
-#         result = await db.get_booking_point_svo_aer(
-#             demcluster=result[0],
-#             flt_num=flt_num.flt_num)
-#         return serializer_booking_point(result)
-
-#     elif result[1] == 'SVO' and result[2] == 'ASF':
-#         print('svo-asf')
-#         result = await db.get_booking_point_svo_asf(
-#             demcluster=result[0],
-#             flt_num=flt_num.flt_num)
-#         return serializer_booking_point(result)
-
-
-# второй вариант
 @app.post('/booking_point')
 async def booking_point(flt_num: FltNum, dd: FltDD):
     """
-    Возвращает данные для графика резервирования с учетом сезона
+    Возвращает данные по бронированию в зависимости
+    от сезона
     """
-    result = await db.get_flight_data_with_date(flt_num.flt_num, dd.dd)
+    result = await db.get_season_from_flight_data(flt_num.flt_num, dd.dd)
     print(result)
 
     if result is None:
         return {'error': 'Данные не найдены'}
 
-    if result[0] == 'AER' and result[1] == 'SVO':
+    if result[1] == 'AER' and result[2] == 'SVO':
         print('aer-svo')
-        result = await db.get_booking_point_aer_svo(flt_num.flt_num, dd.dd)
-        return serializer_booking_point(result)
+        result = await pd_booking_point_aer_svo(flt_num.flt_num, dd.dd)
+        return result
 
-    elif result[0] == 'ASF' and result[1] == 'SVO':
+    elif result[1] == 'ASF' and result[2] == 'SVO':
         print('asf-svo')
-        result = await db.get_booking_point_asf_svo(flt_num.flt_num, dd.dd)
-        return serializer_booking_point(result)
+        result = await pd_booking_point_asf_svo(flt_num.flt_num, dd.dd)
+        return result
 
-    elif result[0] == 'SVO' and result[1] == 'AER':
+    elif result[1] == 'SVO' and result[2] == 'AER':
         print('svo-aer')
-        result = await db.get_booking_point_svo_aer(flt_num.flt_num, dd.dd)
-        return serializer_booking_point(result)
+        result = await pd_booking_point_svo_aer(flt_num.flt_num, dd.dd)
+        return result
 
-    elif result[0] == 'SVO' and result[1] == 'ASF':
+    elif result[1] == 'SVO' and result[2] == 'ASF':
         print('svo-asf')
-        result = await db.get_booking_point_svo_asf(flt_num.flt_num, dd.dd)
-        return serializer_booking_point(result)
+        result = await pd_booking_point_svo_asf(flt_num.flt_num, dd.dd)
+        return result
 
+
+# @app.post('/booking_point_second')
+# async def booking_point_second(flt_num: FltNum, dd: FltDD):
+#     """
+#     Возвращает данные для второго графика резервирования с учетом сезонов
+#     """
+#     result = await db.get_flight_data_with_date(flt_num.flt_num, dd.dd)
+#     print(result)
+
+#     if result is None:
+#         return {'error': 'Данные не найдены'}
+
+#     if result[0] == 'AER' and result[1] == 'SVO':
+#         print('aer-svo')
+#         result = await db.get_booking_point_second_aer_svo(
+#             flt_num.flt_num, dd.dd
+#             )
+#         return percentil(result)
+#         # result = await db.get_booking_point_aer_svo(flt_num.flt_num, dd.dd)
+#         # return serializer_booking_point(result)
+
+#     elif result[0] == 'ASF' and result[1] == 'SVO':
+#         print('asf-svo')
+#         # result = await db.get_booking_point_asf_svo(flt_num.flt_num, dd.dd)
+#         # return serializer_booking_point(result)
+
+#     elif result[0] == 'SVO' and result[1] == 'AER':
+#         print('svo-aer')
+#         # result = await db.get_booking_point_svo_aer(flt_num.flt_num, dd.dd)
+#         # return serializer_booking_point(result)
+
+#     elif result[0] == 'SVO' and result[1] == 'ASF':
+#         print('svo-asf')
+#         # result = await db.get_booking_point_svo_asf(flt_num.flt_num, dd.dd)
+#         # return serializer_booking_point(result)
 
 
 @app.post('/demand_forecast')
