@@ -10,7 +10,9 @@ from utils.pd_func import pd_booking_point_aer_svo, pd_booking_point_asf_svo, \
     pd_booking_point_second_aer_svo, pd_booking_point_second_asf_svo, \
     pd_booking_point_second_svo_aer, pd_booking_point_second_svo_asf, \
     pd_demand_forecast_aer_svo, pd_demand_forecast_asf_svo, \
-    pd_demand_forecast_svo_aer, pd_demand_forecast_svo_asf
+    pd_demand_forecast_svo_aer, pd_demand_forecast_svo_asf, \
+    pd_demand_profile_aer_svo, pd_demand_profile_asf_svo, \
+    pd_demand_profile_svo_aer, pd_demand_profile_svo_asf
 
 app = FastAPI()
 db = DB()
@@ -161,6 +163,38 @@ async def booking_point_second(flt_num: FltNum, dd: FltDD):
     elif result[0] == 'SVO' and result[1] == 'ASF':
         print('svo-asf')
         result = await pd_booking_point_second_svo_asf(flt_num.flt_num, dd.dd)
+        return result
+
+
+@app.post('/demand_profile')
+async def demand_profile(flt_num: FltNum, dd: FltDD):
+    """
+    Возвращает данные для третьей вкладки "Профиль спроса"
+    """
+    result = await db.get_flight_data_with_date(flt_num.flt_num, dd.dd)
+    print(result)
+
+    if result is None:
+        return {'error': 'Данные не найдены'}
+
+    if result[0] == 'AER' and result[1] == 'SVO':
+        print('aer-svo')
+        result = await pd_demand_profile_aer_svo(flt_num.flt_num, dd.dd)
+        return result
+
+    elif result[0] == 'ASF' and result[1] == 'SVO':
+        print('asf-svo')
+        result = await pd_demand_profile_asf_svo(flt_num.flt_num, dd.dd)
+        return result
+
+    elif result[0] == 'SVO' and result[1] == 'AER':
+        print('svo-aer')
+        result = await pd_demand_profile_svo_aer(flt_num.flt_num, dd.dd)
+        return result
+
+    elif result[0] == 'SVO' and result[1] == 'ASF':
+        print('svo-asf')
+        result = await pd_demand_profile_svo_asf(flt_num.flt_num, dd.dd)
         return result
 
 

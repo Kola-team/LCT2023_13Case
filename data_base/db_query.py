@@ -528,11 +528,63 @@ class DB:
         # print(result)
         return result
 
-    # async def get_flight_data_with_date(self, flt_num: int, date: date):
-    #     query = select(
-    #         self.flight_forecast.c.leg_orig,
-    #         self.flight_forecast.c.leg_dest,
-    #     ).where(
-    #         self.flight_forecast.c.flt_numsh = flt_num,
+    async def pd_demand_profile_aer_svo(self, flt_num: int):
+        query = select(
+            self.reserv_aer_svo.c.sorg,
+            self.reserv_aer_svo.c.sdst,
+        ).where(
+            self.reserv_aer_svo.c.flt_num == flt_num,
+        ).distinct(
+            self.reserv_aer_svo.c.sorg,
+            self.reserv_aer_svo.c.sdst,
+        )
+        result = await self.__exec_query_fetchone(query)
+        return result
 
-    #     )
+    async def pd_demand_profile_aer_svo_hcbuy(self, flt_num: int, dd: date):
+        query = select(
+            self.reserv_aer_svo.c.hcbuy,
+        ).where(
+            self.reserv_aer_svo.c.flt_num == flt_num,
+            self.reserv_aer_svo.c.dd == dd,
+        ).distinct(
+            self.reserv_aer_svo.c.hcbuy,
+        )
+        result = await self.__exec_query_fetchone(query)
+        return result
+
+    async def pd_demand_profile_asf_svo_hcbuy(self, flt_num: int, dd: date):
+        query = select(
+            self.reserv_asf_svo.c.hcbuy,
+        ).where(
+            self.reserv_asf_svo.c.flt_num == flt_num,
+            self.reserv_asf_svo.c.dd == dd,
+        ).distinct(
+            self.reserv_asf_svo.c.hcbuy,
+        )
+        result = await self.__exec_query_fetchone(query)
+        return result
+
+    async def pd_demand_profile_svo_aer_hcbuy(self, flt_num: int, dd: date):
+        query = select(
+            self.reserv_svo_aer.c.hcbuy,
+        ).where(
+            self.reserv_svo_aer.c.flt_num == flt_num,
+            self.reserv_svo_aer.c.dd == dd,
+        ).distinct(
+            self.reserv_svo_aer.c.hcbuy,
+        )
+        result = await self.__exec_query_fetchone(query)
+        return result
+
+    async def pd_demand_profile_svo_asf_hcbuy(self, flt_num: int, dd: date):
+        query = select(
+            self.reserv_svo_asf.c.hcbuy,
+        ).where(
+            self.reserv_svo_asf.c.flt_num == flt_num,
+            self.reserv_svo_asf.c.dd == dd,
+        ).distinct(
+            self.reserv_svo_asf.c.hcbuy,
+        )
+        result = await self.__exec_query_fetchone(query)
+        return result
