@@ -513,3 +513,26 @@ class DB:
         result = await self.__exec_query_fetchone(query)
         print(result)
         return result[0]
+
+    async def pd_demand_forecast(self, flt_num: int):
+        query = select(
+            self.flight_forecast.c.leg_orig,
+            self.flight_forecast.c.leg_dest,
+        ).where(
+            self.flight_forecast.c.flt_numsh == flt_num,
+        ).distinct(
+            self.flight_forecast.c.leg_orig,
+            self.flight_forecast.c.leg_dest,
+        )
+        result = await self.__exec_query_fetchone(query)
+        # print(result)
+        return result
+
+    # async def get_flight_data_with_date(self, flt_num: int, date: date):
+    #     query = select(
+    #         self.flight_forecast.c.leg_orig,
+    #         self.flight_forecast.c.leg_dest,
+    #     ).where(
+    #         self.flight_forecast.c.flt_numsh = flt_num,
+
+    #     )

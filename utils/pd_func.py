@@ -14,6 +14,7 @@ segment_names = ['b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
 
 async def pd_booking_point_aer_svo(fltnum: int, date_str: str):
     """
+    1 вкладка
     /booking_point данные для верхнего графика резервирования с уетом сезонов
     направление aer-svo
     """
@@ -54,6 +55,7 @@ async def pd_booking_point_aer_svo(fltnum: int, date_str: str):
 
 async def pd_booking_point_asf_svo(fltnum: int, date_str: str):
     """
+    1 вкладка
     /booking_point данные для верхнего графика резервирования с уетом сезонов
     направление asf-svo
     """
@@ -94,6 +96,7 @@ async def pd_booking_point_asf_svo(fltnum: int, date_str: str):
 
 async def pd_booking_point_svo_aer(fltnum: int, date_str: str):
     """
+    1 вкладка
     /booking_point данные для верхнего графика резервирования с уетом сезонов
     направление svo-aer
     """
@@ -134,6 +137,7 @@ async def pd_booking_point_svo_aer(fltnum: int, date_str: str):
 
 async def pd_booking_point_svo_asf(fltnum: int, date_str: str):
     """
+    1 вкладка
     /booking_point данные для верхнего графика резервирования с уетом сезонов
     направление svo-asf
     """
@@ -174,6 +178,7 @@ async def pd_booking_point_svo_asf(fltnum: int, date_str: str):
 
 async def pd_booking_point_second_aer_svo(fltnum: int, date_str: str):
     """
+    1 вкладка
     /booking_point_second данные для второго графика резервирования с учетом сезонов
     направление aer-svo
     """
@@ -199,6 +204,7 @@ async def pd_booking_point_second_aer_svo(fltnum: int, date_str: str):
 
 async def pd_booking_point_second_asf_svo(fltnum: int, date_str: str):
     """
+    1 вкладка
     /booking_point_second данные для второго графика резервирования с учетом сезонов
     направление asf-svo
     """
@@ -221,8 +227,10 @@ async def pd_booking_point_second_asf_svo(fltnum: int, date_str: str):
     to_json = json.loads(str_jons)
     return to_json
 
+
 async def pd_booking_point_second_svo_aer(fltnum: int, date_str: str):
     """
+    1 вкладка
     /booking_point_second данные для второго графика резервирования с учетом сезонов
     направление svo_aer
     """
@@ -248,6 +256,7 @@ async def pd_booking_point_second_svo_aer(fltnum: int, date_str: str):
 
 async def pd_booking_point_second_svo_asf(fltnum: int, date_str: str):
     """
+    1 вкладка
     /booking_point_second данные для второго графика резервирования с учетом сезонов
     направление svo_asf
     """
@@ -269,3 +278,163 @@ async def pd_booking_point_second_svo_asf(fltnum: int, date_str: str):
 
     to_json = json.loads(str_jons)
     return to_json
+
+
+async def pd_demand_forecast_aer_svo(fltnum: int, date_str: str):
+    """
+    4 вкладка
+    /demand_forecast данные для "Построение графиков прогноза
+    резервирования билетов"
+    направление aer_svo
+    """
+    orig, dest = await db.pd_demand_forecast(fltnum)
+
+    sf = pd.read_sql(
+        f"SELECT fd, tt "
+        f"FROM public.flight_forecast "
+        f"WHERE flt_numsh='{fltnum}' ",
+        db.engine,
+        parse_dates=['fd'])
+
+    sfr = pd.read_sql(
+        f"SELECT * "
+        f"FROM public.res_forecast_aer_svo "
+        f"WHERE flt='{fltnum}' AND fd='{date_str}' ",
+        db.engine)
+
+    nonzero_segments = []
+    for s in segment_names:
+        if s in sfr.columns:
+            if sfr[s].gt(0).any():
+                nonzero_segments.append(s)
+
+    # Формирование json
+    str_jons_sf = sf.to_json()
+
+    cols = ['dtd', 'tt'] + nonzero_segments
+    str_json_sfr = sfr[cols].to_json()
+
+    return {
+            "first_graph": json.loads(str_jons_sf),
+            "second_graph": json.loads(str_json_sfr)
+            }
+
+
+async def pd_demand_forecast_asf_svo(fltnum: int, date_str: str):
+    """
+    4 вкладка
+    /demand_forecast данные для "Построение графиков прогноза
+    резервирования билетов"
+    направление asf_svo
+    """
+    orig, dest = await db.pd_demand_forecast(fltnum)
+
+    sf = pd.read_sql(
+        f"SELECT fd, tt "
+        f"FROM public.flight_forecast "
+        f"WHERE flt_numsh='{fltnum}' ",
+        db.engine,
+        parse_dates=['fd'])
+
+    sfr = pd.read_sql(
+        f"SELECT * "
+        f"FROM public.res_forecast_asf_svo "
+        f"WHERE flt='{fltnum}' AND fd='{date_str}' ",
+        db.engine)
+
+    nonzero_segments = []
+    for s in segment_names:
+        if s in sfr.columns:
+            if sfr[s].gt(0).any():
+                nonzero_segments.append(s)
+
+    # Формирование json
+    str_jons_sf = sf.to_json()
+
+    cols = ['dtd', 'tt'] + nonzero_segments
+    str_json_sfr = sfr[cols].to_json()
+
+    return {
+            "first_graph": json.loads(str_jons_sf),
+            "second_graph": json.loads(str_json_sfr)
+            }
+
+
+async def pd_demand_forecast_svo_aer(fltnum: int, date_str: str):
+    """
+    4 вкладка
+    /demand_forecast данные для "Построение графиков прогноза
+    резервирования билетов"
+    направление svo_aer
+    """
+    orig, dest = await db.pd_demand_forecast(fltnum)
+
+    sf = pd.read_sql(
+        f"SELECT fd, tt "
+        f"FROM public.flight_forecast "
+        f"WHERE flt_numsh='{fltnum}' ",
+        db.engine,
+        parse_dates=['fd'])
+
+    sfr = pd.read_sql(
+        f"SELECT * "
+        f"FROM public.res_forecast_svo_aer "
+        f"WHERE flt='{fltnum}' AND fd='{date_str}' ",
+        db.engine)
+
+    nonzero_segments = []
+    for s in segment_names:
+        if s in sfr.columns:
+            if sfr[s].gt(0).any():
+                nonzero_segments.append(s)
+
+    # Формирование json
+    str_jons_sf = sf.to_json()
+
+    cols = ['dtd', 'tt'] + nonzero_segments
+    str_json_sfr = sfr[cols].to_json()
+
+    return {
+            "first_graph": json.loads(str_jons_sf),
+            "second_graph": json.loads(str_json_sfr)
+            }
+
+
+async def pd_demand_forecast_svo_asf(fltnum: int, date_str: str):
+    """
+    4 вкладка
+    /demand_forecast данные для "Построение графиков прогноза
+    резервирования билетов"
+    направление svo_asf
+    """
+    orig, dest = await db.pd_demand_forecast(fltnum)
+
+    sf = pd.read_sql(
+        f"SELECT fd, tt "
+        f"FROM public.flight_forecast "
+        f"WHERE flt_numsh='{fltnum}' ",
+        db.engine,
+        parse_dates=['fd'])
+
+    sfr = pd.read_sql(
+        f"SELECT * "
+        f"FROM public.res_forecast_svo_asf "
+        f"WHERE flt='{fltnum}' AND fd='{date_str}' ",
+        db.engine)
+
+    nonzero_segments = []
+    for s in segment_names:
+        if s in sfr.columns:
+            if sfr[s].gt(0).any():
+                nonzero_segments.append(s)
+
+    # Формирование json
+    str_jons_sf = sf.to_json()
+
+    cols = ['dtd', 'tt'] + nonzero_segments
+    str_json_sfr = sfr[cols].to_json()
+
+    return {
+            "first_graph": json.loads(str_jons_sf),
+            "second_graph": json.loads(str_json_sfr)
+            }

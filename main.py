@@ -4,12 +4,13 @@ from fastapi.middleware.cors import CORSMiddleware
 from data_base.db_query import DB
 from pydantic_models import FltNum, Flight, Fligts, Seasonality, \
     ListSeasonality, FltDD
-from serializers import serializer_booking, \
-    serializer_demand_forecast
+from serializers import serializer_booking
 from utils.pd_func import pd_booking_point_aer_svo, pd_booking_point_asf_svo, \
     pd_booking_point_svo_aer, pd_booking_point_svo_asf, \
     pd_booking_point_second_aer_svo, pd_booking_point_second_asf_svo, \
-    pd_booking_point_second_svo_aer, pd_booking_point_second_svo_asf
+    pd_booking_point_second_svo_aer, pd_booking_point_second_svo_asf, \
+    pd_demand_forecast_aer_svo, pd_demand_forecast_asf_svo, \
+    pd_demand_forecast_svo_aer, pd_demand_forecast_svo_asf
 
 app = FastAPI()
 db = DB()
@@ -55,7 +56,6 @@ async def seasonality(flt_num: FltNum):
     result = await db.get_seasonality(flt_num.flt_num)
     lst = []
     for res in result:
-        # print(res)
         flyclass = {dct.get(el): res[el] for el in range(3, 25)}
         lst.append(Seasonality(
             date=res[2],
@@ -169,40 +169,28 @@ async def demand_forecast(flt_num: FltNum, dd: FltDD):
     """
     Возвращает данные для прогноза спроса
     """
-    # result = await db.get_flight_data_with_date(flt_num.flt_num, dd.dd)
-    result = await db.get_demand_forecast_aer_svo(flt_num.flt_num, dd.dd)
+    result = await db.pd_demand_forecast(flt_num.flt_num)
     print(result)
-    return serializer_demand_forecast(result)
 
-    # if result is None:
-    #     return {'error': 'Данные не найдены'}
+    if result is None:
+        return {'error': 'Данные не найдены'}
 
-    # if result[0] == 'AER' and result[1] == 'SVO':
-    #     print('aer-svo')
-    #     result = await db.get_demand_forecast_aer_svo(flt_num.flt_num, dd.dd)
-    #     return serializer_demand_forecast(result)
+    if result[0].strip() == 'AER' and result[1].strip() == 'SVO':
+        print('aer-svo')
+        result = await pd_demand_forecast_aer_svo(flt_num.flt_num, dd.dd)
+        return result
 
-    #     # print(result)
-    #     # print(DemandForecast(items=result))
-    #     # return serializer_booking_point(result)
+    elif result[0].strip() == 'ASF' and result[1].strip() == 'SVO':
+        print('asf-svo')
+        result = await pd_demand_forecast_asf_svo(flt_num.flt_num, dd.dd)
+        return result
 
-    # elif result[0] == 'ASF' and result[1] == 'SVO':
-    #     print('asf-svo')
-    #     # result = await db.get_booking_point_asf_svo(
-    #     #     demcluster=result[0],
-    #     #     flt_num=flt_num.flt_num)
-    #     # return serializer_booking_point(result)
+    elif result[0].strip() == 'SVO' and result[1].strip() == 'AER':
+        print('svo-aer')
+        result = await pd_demand_forecast_svo_aer(flt_num.flt_num, dd.dd)
+        return result
 
-    # elif result[0] == 'SVO' and result[1] == 'AER':
-    #     print('svo-aer')
-    #     # result = await db.get_booking_point_svo_aer(
-    #     #     demcluster=result[0],
-    #     #     flt_num=flt_num.flt_num)
-    #     # return serializer_booking_point(result)
-
-    # elif result[0] == 'SVO' and result[1] == 'ASF':
-    #     print('svo-asf')
-    #     # result = await db.get_booking_point_svo_asf(
-    #     #     demcluster=result[0],
-    #     #     flt_num=flt_num.flt_num)
-    #     # return serializer_booking_point(result)
+    elif result[0].strip() == 'SVO' and result[1].strip() == 'ASF':
+        print('svo-asf')
+        result = await pd_demand_forecast_svo_asf(flt_num.flt_num, dd.dd)
+        return result
