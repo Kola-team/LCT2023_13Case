@@ -1,0 +1,62 @@
+{
+  "name": "aeroflot",
+  "version": "0.1.0",
+  "private": true,
+  "proxy": "http://87.242.92.17:8000",
+  "dependencies": {
+    "@emotion/react": "^11.11.0",
+    "@mantine/carousel": "^6.0.11",
+    "@mantine/core": "^6.0.11",
+    "@mantine/dates": "^6.0.11",
+    "@mantine/dropzone": "^6.0.11",
+    "@mantine/form": "^6.0.11",
+    "@mantine/hooks": "^6.0.11",
+    "@mantine/modals": "^6.0.11",
+    "@mantine/notifications": "^6.0.11",
+    "@mantine/nprogress": "^6.0.11",
+    "@mantine/prism": "^6.0.11",
+    "@mantine/spotlight": "^6.0.11",
+    "@mantine/tiptap": "^6.0.11",
+    "@reduxjs/toolkit": "^1.9.5",
+    "@tabler/icons-react": "^2.20.0",
+    "@tiptap/extension-link": "^2.0.3",
+    "@tiptap/react": "^2.0.3",
+    "@tiptap/starter-kit": "^2.0.3",
+    "chart.js": "^4.3.0",
+    "dayjs": "^1.11.7",
+    "embla-carousel-react": "^7.1.0",
+    "plotly.js": "^2.23.2",
+    "react": "^18.2.0",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.2.0",
+    "react-plotly.js": "^2.6.0",
+    "react-redux": "^8.0.5",
+    "react-router-dom": "^6.11.2",
+    "react-scripts": "5.0.1",
+    "recharts": "^2.6.2",
+    "redux-persist": "^6.0.0"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}
