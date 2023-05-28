@@ -2,7 +2,9 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 const initialState = {
     tabs: 'Сезонность спроса',
+    allFlight:[],
     seasonalDemandData: [],
+    bookingDynamicsData: [],
     stacks: [],
 };
 
@@ -10,6 +12,26 @@ export const setAllFlight = createAsyncThunk(
     'user/setAllFlight',
     async () => {
         const response = await fetch('/all_flight/')
+            .then((data) => data.json());
+        return response;
+    }
+);
+
+export const setBookingDynamicsData = createAsyncThunk(
+    'user/setBookingDynamicsData',
+    async ([fltNum, dateString]) => {
+        const response = await fetch('/booking_point', {
+            method: 'POST',
+            body: JSON.stringify({
+                flt_num: {
+                    flt_num: fltNum
+                },
+                dd: {
+                    dd: dateString
+                }
+            }),
+            headers: { "content-type": "application/json" }
+        })
             .then((data) => data.json());
         return response;
     }
@@ -43,9 +65,12 @@ export const dataSlice = createSlice({
             .addCase(setAllFlight.fulfilled, (state, action) => {
                 state.allFlight = action.payload.items;
             })
-        .addCase(setSeasonalDemandData.fulfilled, (state, action) => {
-            state.seasonalDemandData = action.payload;
-        })
+            .addCase(setSeasonalDemandData.fulfilled, (state, action) => {
+                state.seasonalDemandData = action.payload;
+            })
+            .addCase(setBookingDynamicsData.fulfilled, (state, action) => {
+                state.bookingDynamicsData = action.payload;
+            })
     },
 });
 

@@ -9,10 +9,17 @@ const Dashboard = () => {
     const tabs = useSelector(state => state.data.tabs);
     const seasonalDemandData = useSelector(state => state.data.seasonalDemandData);
 
-    let dataClassPlot = [];
-    let dataTotalPlot = [];
+    const bookingDynamics = () => {
+        return (
+            null
+        )
+    }
 
     const SeasonalDemand = () => {
+
+        let dataClassPlot = [];
+        let dataTotalPlot = [];
+
         if ('items' in seasonalDemandData) {
             dataClassPlot = Object.keys(seasonalDemandData.items[0].fly_class).map((item) => {
                 return {
@@ -34,7 +41,7 @@ const Dashboard = () => {
                         'rgb(0, 217, 54)'
                         :
                         i.demcluster === 1
-                            ? 'rgb(255, 251, 0)'
+                            ? 'rgb(255, 201, 0)'
                             : 'rgb(255, 0, 0)')
                 }
             }]
@@ -87,7 +94,7 @@ const Dashboard = () => {
 
     switch (tabs) {
         case 'Динамика бронирования':
-            dashBoarsContetn = null
+            dashBoarsContetn = bookingDynamics();
             break;
         case 'Сезонность спроса':
             dashBoarsContetn = SeasonalDemand();

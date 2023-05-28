@@ -1,9 +1,12 @@
 import { Tabs, Container, Autocomplete, Center, Flex, Group, Button, Select } from "@mantine/core";
 import { useForm } from '@mantine/form';
+import { DateInput } from '@mantine/dates';
+
+import { useEffect } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 
-import { setTabs, setSeasonalDemandData } from "../../storage/slises/dataSlise";
+import { setTabs, setSeasonalDemandData, setBookingDynamicsData } from "../../storage/slises/dataSlise";
 
 import Dashboard from "../Dashboard/Dashboard";
 
@@ -24,7 +27,7 @@ const Main = () => {
             label: item
         }
     });
-  const fltNumList = allFlight.map((item) => item.flt_num.toString()).sort()
+    const fltNumList = allFlight.map((item) => item.flt_num.toString()).sort()
     const destinationList = allFlight.map((item) => item.destination).reduce((acc, item) => {
         if (acc.includes(item)) {
             return acc;
@@ -37,7 +40,14 @@ const Main = () => {
         }
     });
 
-  
+    const formbookingDynamics = useForm({
+        initialValues: {
+            departure: '',
+            destination: '',
+            fltNum: '',
+            dd: ''
+        }
+    });
 
     const formSeasonalDemand = useForm({
         initialValues: {
@@ -62,19 +72,47 @@ const Main = () => {
                         <form>
                             <Flex align={'center'} justify={'space-between'}>
                                 <Group>
-                                    <Autocomplete
-                                        label="Откуда"
-                                        placeholder='Пункт отрпавления'
-                                        data={['Москва', 'Сочи', 'Санкт-Петербург', 'Краснодар']}
+                                    <Select
+                                        searchable
+                                        nothingFound="Не найдено"
+                                        label="Отрпавление"
+                                        placeholder='не выбрано'
+                                        value={formbookingDynamics.values.departure}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('departure', value)}
+                                        data={departureList}
+                                        w={150}
                                     />
-                                    <Autocomplete
-                                        label="Куда"
-                                        placeholder='Пункт прибытия'
-                                        data={['Москва', 'Сочи', 'Санкт-Петербург', 'Краснодар']}
+                                    <Select
+                                        searchable
+                                        nothingFound="Не найдено"
+                                        label="Прибытие"
+                                        placeholder='не выбрано'
+                                        value={formbookingDynamics.values.destination}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('destination', value)}
+                                        data={destinationList}
+                                        w={130}
+                                    />
+                                    <Select
+                                        searchable
+                                        required
+                                        nothingFound="Не найдено"
+                                        label="Рейс"
+                                        placeholder='не выбран'
+                                        value={formbookingDynamics.values.fltNum}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('fltNum', value)}
+                                        data={fltNumList}
+                                        w={130}
+                                    />
+                                    <DateInput
+                                        w={130}
+                                        label="Выберите дату"
+                                        value={formbookingDynamics.values.dd}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('dd', value)}
                                     />
                                 </Group>
 
-                                <Button variant={'light'} mt={'25px'}>Сформировать</Button>
+                                <Button variant={'light'} mt={'25px'} onClick={() => { console.log(formbookingDynamics.values.dd.toLocaleDateString('en-CA'),formbookingDynamics.values.fltNum); dispatch((setBookingDynamicsData([formbookingDynamics.values.fltNum, formbookingDynamics.values.dd.toLocaleDateString('en-CA')]))) }}
+                                >Сформировать</Button>
 
                             </Flex>
                         </form>
@@ -87,33 +125,34 @@ const Main = () => {
                                 <Group>
                                     <Select
                                         searchable
-                                        nothingFound="Ничего не найдено"
-                                        label="Аэропорт вылета"
-                                        placeholder='Пункт отрпавления'
+                                        nothingFound="Не найдено"
+                                        label="Отрпавление"
+                                        placeholder='не выбрано'
                                         value={formSeasonalDemand.values.departure}
                                         onChange={(value) => formSeasonalDemand.setFieldValue('departure', value)}
                                         data={departureList}
-                                        w={150}
+                                        w={130}
                                     />
                                     <Select
                                         searchable
-                                        nothingFound="Ничего не найдено"
-                                        label="Аэропорт прибытия"
-                                        placeholder='Пункт прибытия'
+                                        nothingFound="Не найдено"
+                                        label="Прибытие"
+                                        placeholder='не выбрано'
                                         value={formSeasonalDemand.values.destination}
                                         onChange={(value) => formSeasonalDemand.setFieldValue('destination', value)}
                                         data={destinationList}
-                                        w={150}
+                                        w={130}
                                     />
                                     <Select
                                         searchable
                                         required
-                                        label="Номер рейса"
-                                        placeholder='номер рейса'
+                                        label="Рейс"
+                                        nothingFound="Не найдено"
+                                        placeholder='не выбран'
                                         value={formSeasonalDemand.values.fltNum}
                                         onChange={(value) => formSeasonalDemand.setFieldValue('fltNum', value)}
                                         data={fltNumList}
-                                        w={150}
+                                        w={130}
                                     />
                                 </Group>
 
@@ -172,11 +211,6 @@ const Main = () => {
             </Center>
             <Dashboard />
         </Container>
-        {/* <div style={{ minWidth: '960px' }}>
-            <img style={{ zIndex: '0', position: 'absolute', bottom: '150px', right: '0', height: '18rem' }} src="https://www.aeroflot.ru/frontend/static/img/clouds.png" alt=""></img>
-            <img style={{ zIndex: '10', position: 'absolute', bottom: '70px', right: '0', height: '15rem' }} src="https://www.aeroflot.ru/frontend/static/img/aircraft.png" alt=""></img>
-            <img style={{ position: 'absolute', bottom: '0', right: '0', }} src="https://www.aeroflot.ru/frontend/static/img/smile2.svg" alt=""></img>
-        </div> */}
     </>
     )
 }
