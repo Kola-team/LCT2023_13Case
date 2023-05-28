@@ -1,20 +1,21 @@
-import { Tabs, Container, Autocomplete, Center, Flex, Group, Button, Select } from "@mantine/core";
+import { Tabs, Container, Center, Flex, Group, Button, Select } from "@mantine/core";
 import { useForm } from '@mantine/form';
 import { DateInput } from '@mantine/dates';
-
-import { useEffect } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 
 import { setTabs, setSeasonalDemandData, setBookingDynamicsData } from "../../storage/slises/dataSlise";
 
 import Dashboard from "../Dashboard/Dashboard";
+import AuthenticationForm from "../AuthenticationForm/AuthenticationForm";
+
 
 const Main = () => {
 
     const dispatch = useDispatch();
 
     const allFlight = useSelector(state => state.data.allFlight);
+    const token = useSelector(state => state.user.token);
 
     const departureList = allFlight.map((item) => item.departure).reduce((acc, item) => {
         if (acc.includes(item)) {
@@ -58,7 +59,7 @@ const Main = () => {
     });
 
     return (<>
-        <Container>
+        {token ? <Container>
             <Center>
                 <Tabs defaultValue={"Сезонность спроса"} onTabChange={(e) => (dispatch(setTabs(e)))} radius="xs" variant="outline" >
                     <Tabs.List position="apart" grow={true}>
@@ -75,7 +76,7 @@ const Main = () => {
                                     <Select
                                         searchable
                                         nothingFound="Не найдено"
-                                        label="Отрпавление"
+                                        label="Отправление"
                                         placeholder='не выбрано'
                                         value={formbookingDynamics.values.departure}
                                         onChange={(value) => formbookingDynamics.setFieldValue('departure', value)}
@@ -104,6 +105,7 @@ const Main = () => {
                                         w={130}
                                     />
                                     <DateInput
+                                        required
                                         w={130}
                                         label="Выберите дату"
                                         value={formbookingDynamics.values.dd}
@@ -111,7 +113,7 @@ const Main = () => {
                                     />
                                 </Group>
 
-                                <Button variant={'light'} mt={'25px'} onClick={() => { console.log(formbookingDynamics.values.dd.toLocaleDateString('en-CA'),formbookingDynamics.values.fltNum); dispatch((setBookingDynamicsData([formbookingDynamics.values.fltNum, formbookingDynamics.values.dd.toLocaleDateString('en-CA')]))) }}
+                                <Button disabled variant={'light'} mt={'25px'} onClick={() => { console.log(formbookingDynamics.values.dd.toLocaleDateString('en-CA'), formbookingDynamics.values.fltNum); dispatch((setBookingDynamicsData([formbookingDynamics.values.fltNum, formbookingDynamics.values.dd.toLocaleDateString('en-CA')]))) }}
                                 >Сформировать</Button>
 
                             </Flex>
@@ -126,7 +128,7 @@ const Main = () => {
                                     <Select
                                         searchable
                                         nothingFound="Не найдено"
-                                        label="Отрпавление"
+                                        label="Отправление"
                                         placeholder='не выбрано'
                                         value={formSeasonalDemand.values.departure}
                                         onChange={(value) => formSeasonalDemand.setFieldValue('departure', value)}
@@ -166,19 +168,48 @@ const Main = () => {
                         <form>
                             <Flex align={'center'} justify={'space-between'}>
                                 <Group>
-                                    <Autocomplete
-                                        label="Откуда"
-                                        placeholder='Пункт отрпавления'
-                                        data={['Москва', 'Сочи', 'Санкт-Петербург', 'Краснодар']}
+                                    <Select
+                                        searchable
+                                        nothingFound="Не найдено"
+                                        label="Отправление"
+                                        placeholder='не выбрано'
+                                        value={formbookingDynamics.values.departure}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('departure', value)}
+                                        data={departureList}
+                                        w={150}
                                     />
-                                    <Autocomplete
-                                        label="Куда"
-                                        placeholder='Пункт прибытия'
-                                        data={['Москва', 'Сочи', 'Санкт-Петербург', 'Краснодар']}
+                                    <Select
+                                        searchable
+                                        nothingFound="Не найдено"
+                                        label="Прибытие"
+                                        placeholder='не выбрано'
+                                        value={formbookingDynamics.values.destination}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('destination', value)}
+                                        data={destinationList}
+                                        w={130}
+                                    />
+                                    <Select
+                                        searchable
+                                        required
+                                        nothingFound="Не найдено"
+                                        label="Рейс"
+                                        placeholder='не выбран'
+                                        value={formbookingDynamics.values.fltNum}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('fltNum', value)}
+                                        data={fltNumList}
+                                        w={130}
+                                    />
+                                    <DateInput
+                                        required
+                                        w={130}
+                                        label="Выберите дату"
+                                        value={formbookingDynamics.values.dd}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('dd', value)}
                                     />
                                 </Group>
 
-                                <Button variant={'light'} mt={'25px'}>Сформировать</Button>
+                                <Button disabled variant={'light'} mt={'25px'} onClick={() => { console.log(formbookingDynamics.values.dd.toLocaleDateString('en-CA'), formbookingDynamics.values.fltNum); dispatch((setBookingDynamicsData([formbookingDynamics.values.fltNum, formbookingDynamics.values.dd.toLocaleDateString('en-CA')]))) }}
+                                >Сформировать</Button>
 
                             </Flex>
                         </form>
@@ -189,19 +220,48 @@ const Main = () => {
                         <form>
                             <Flex align={'center'} justify={'space-between'}>
                                 <Group>
-                                    <Autocomplete
-                                        label="Откуда"
-                                        placeholder='Пункт отрпавления'
-                                        data={['Москва', 'Сочи', 'Санкт-Петербург', 'Краснодар']}
+                                    <Select
+                                        searchable
+                                        nothingFound="Не найдено"
+                                        label="Отправление"
+                                        placeholder='не выбрано'
+                                        value={formbookingDynamics.values.departure}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('departure', value)}
+                                        data={departureList}
+                                        w={150}
                                     />
-                                    <Autocomplete
-                                        label="Куда"
-                                        placeholder='Пункт прибытия'
-                                        data={['Москва', 'Сочи', 'Санкт-Петербург', 'Краснодар']}
+                                    <Select
+                                        searchable
+                                        nothingFound="Не найдено"
+                                        label="Прибытие"
+                                        placeholder='не выбрано'
+                                        value={formbookingDynamics.values.destination}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('destination', value)}
+                                        data={destinationList}
+                                        w={130}
+                                    />
+                                    <Select
+                                        searchable
+                                        required
+                                        nothingFound="Не найдено"
+                                        label="Рейс"
+                                        placeholder='не выбран'
+                                        value={formbookingDynamics.values.fltNum}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('fltNum', value)}
+                                        data={fltNumList}
+                                        w={130}
+                                    />
+                                    <DateInput
+                                        required
+                                        w={130}
+                                        label="Выберите дату"
+                                        value={formbookingDynamics.values.dd}
+                                        onChange={(value) => formbookingDynamics.setFieldValue('dd', value)}
                                     />
                                 </Group>
 
-                                <Button variant={'light'} mt={'25px'}>Сформировать</Button>
+                                <Button disabled variant={'light'} mt={'25px'} onClick={() => { console.log(formbookingDynamics.values.dd.toLocaleDateString('en-CA'), formbookingDynamics.values.fltNum); dispatch((setBookingDynamicsData([formbookingDynamics.values.fltNum, formbookingDynamics.values.dd.toLocaleDateString('en-CA')]))) }}
+                                >Сформировать</Button>
 
                             </Flex>
                         </form>
@@ -210,7 +270,7 @@ const Main = () => {
                 </Tabs>
             </Center>
             <Dashboard />
-        </Container>
+        </Container> : <AuthenticationForm />}
     </>
     )
 }
