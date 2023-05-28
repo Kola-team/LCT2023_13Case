@@ -4,3 +4,4 @@ __pycache__/
 .env
 aeroflot.sql
 /load_data
+/aeroflot
