@@ -2,7 +2,7 @@ from datetime import date
 
 from sqlalchemy import create_engine, Table, MetaData, select
 
-from config import DATABASE_URL
+from app.config import DATABASE_URL
 
 
 class DB:

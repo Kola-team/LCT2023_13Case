@@ -1,10 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from data_base.db_query import DB
-from pydantic_models import FltNum, Flight, Fligts, Seasonality, \
+from app.data_base.db_query import DB
+from app.pydantic_models import FltNum, Flight, Fligts, Seasonality, \
     ListSeasonality, FltDD
-from utils.pd_func import pd_booking_point_aer_svo, pd_booking_point_asf_svo, \
+from app.utils.pd_func import pd_booking_point_aer_svo, pd_booking_point_asf_svo, \
     pd_booking_point_svo_aer, pd_booking_point_svo_asf, \
     pd_booking_point_second_aer_svo, pd_booking_point_second_asf_svo, \
     pd_booking_point_second_svo_aer, pd_booking_point_second_svo_asf, \

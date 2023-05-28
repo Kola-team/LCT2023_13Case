@@ -1,4 +1,4 @@
-from pydantic_models import Booking, ListBooking, BookingPoint, \
+from app.pydantic_models import Booking, ListBooking, BookingPoint, \
     ListBookingPoint, DemandForecast
 
 

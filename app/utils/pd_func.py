@@ -2,7 +2,7 @@ import json
 
 import pandas as pd
 
-from data_base.db_query import DB
+from app.data_base.db_query import DB
 
 
 db = DB()
