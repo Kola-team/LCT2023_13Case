@@ -19,7 +19,7 @@ const Dashboard = () => {
                         <Center >
                             <Flex align={'center'} direction={'column'}>
                                 <Title>Проект</Title>
-                                <img  style={{width:'70%'}} src={test1}></img>
+                                <img  style={{width:'100%'}}   src={test4}></img>
                             </Flex>
                         </Center>
                     </ScrollArea>
@@ -154,7 +154,7 @@ const Dashboard = () => {
                         <Center >
                             <Flex align={'center'} direction={'column'}>
                             <Title>Проект</Title>
-                                <img  style={{width:'100%'}} src={test4}></img>
+                                <img style={{width:'70%'}} src={test1}></img>
                             </Flex>
                         </Center>
                     </ScrollArea>
